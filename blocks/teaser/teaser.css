@@ -11,7 +11,7 @@
   display: block;
 }
 
-@media (width >= 600px) {
+@media (width >= 100px) {
   .teaser {
     flex-direction: row;
     align-items: center;
