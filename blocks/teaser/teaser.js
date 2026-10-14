@@ -1,7 +1,7 @@
 export default function decorate(block) {
   // Extract content from rows/columns rendered by EDS
   const rows = [...block.children];
-  
+
   rows.forEach((row) => {
     const cells = [...row.children];
     // Modify DOM or add custom classes
