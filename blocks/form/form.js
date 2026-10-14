@@ -23,7 +23,7 @@ function constructPayload(form) {
 }
 
 async function submissionFailure(error, form) {
-  alert(error); // TODO define error mechansim
+  console.error(error); // TODO define error mechanism
   form.setAttribute('data-submitting', 'false');
   form.querySelector('button[type="submit"]').disabled = false;
 }
@@ -128,34 +128,12 @@ function createFieldWrapper(fd, tagName = 'div') {
   return fieldWrapper;
 }
 
-function createButton(fd) {
-  const wrapper = createFieldWrapper(fd);
-  const button = document.createElement('button');
-  button.textContent = fd.Label;
-  button.type = fd.Type;
-  button.classList.add('btn-info');
-  button.classList.add('btn');
-  button.classList.add('btn-lg');
-  button.dataset.redirect = fd.Extra || '';
-  button.id = fd.Id;
-  button.name = fd.Name;
-  button.addEventListener("click", nextFunc);
-  wrapper.replaceChildren(button);
-  return wrapper;
-}
-
-// let currentFieldsetIndex = 0;
-// function nextFunc(){
-//   console.log("clicked");
-//   const fieldsets = document.querySelectorAll('fieldset');
-//   fieldsets[currentFieldsetIndex].classList.remove('active');
-//   currentFieldsetIndex++;
-//   if(currentFieldsetIndex >= fieldsets.length){
-//     currentFieldsetIndex=0;
-//   }
-//   fieldsets[currentFieldsetIndex].classList.add('active');
-// }
 let currentFieldsetIndex = 0;
+
+function isLastFieldset(fieldset) {
+  const fieldsets = document.querySelectorAll('fieldset');
+  return fieldset === fieldsets[fieldsets.length - 1];
+}
 
 function nextFunc() {
   const fieldsets = document.querySelectorAll('fieldset');
@@ -174,9 +152,20 @@ function nextFunc() {
   }
 }
 
-function isLastFieldset(fieldset) {
-  const fieldsets = document.querySelectorAll('fieldset');
-  return fieldset === fieldsets[fieldsets.length - 1];
+function createButton(fd) {
+  const wrapper = createFieldWrapper(fd);
+  const button = document.createElement('button');
+  button.textContent = fd.Label;
+  button.type = fd.Type;
+  button.classList.add('btn-info');
+  button.classList.add('btn');
+  button.classList.add('btn-lg');
+  button.dataset.redirect = fd.Extra || '';
+  button.id = fd.Id;
+  button.name = fd.Name;
+  button.addEventListener('click', nextFunc);
+  wrapper.replaceChildren(button);
+  return wrapper;
 }
 
 function createSubmit(fd) {
@@ -263,7 +252,7 @@ function createFieldSet(fd) {
 function groupFieldsByFieldSet(form) {
   const fieldsets = form.querySelectorAll('fieldset');
   fieldsets?.forEach((fieldset) => {
-    const fields = form.querySelectorAll(`[data-fieldset="${fieldset.name}"`);
+    const fields = form.querySelectorAll(`[data-fieldset="${fieldset.name}"]`);
     fields?.forEach((field) => {
       fieldset.append(field);
     });
@@ -321,6 +310,13 @@ function decorateFormFields(form) {
   decorateFieldset(form);
 }
 
+function addActiveClassToFirstFieldset(form) {
+  const firstfieldset = form.querySelector('fieldset');
+  if (firstfieldset) {
+    firstfieldset.classList.add('active');
+  }
+}
+
 async function fetchData(url) {
   const resp = await fetch(url);
   const json = await resp.json();
@@ -350,7 +346,7 @@ async function createForm(formURL) {
     if (input) {
       input.id = fd.Id;
       input.name = fd.Name;
-     // input.value = fd.Value;
+      // input.value = fd.Value;
       input.Placeholder = fd.Placeholder;
       if (fd.Description) {
         input.setAttribute('aria-describedby', `${fd.Id}-description`);
@@ -370,13 +366,7 @@ async function createForm(formURL) {
   addActiveClassToFirstFieldset(form);
   return form;
 }
-//new function for adding active class to the first fieldset
-function addActiveClassToFirstFieldset(form) {
-  const firstfieldset = form.querySelector('fieldset');
-  if (firstfieldset) {
-    firstfieldset.classList.add('active');
-  }
-}
+
 export default async function decorate(block) {
   const formLink = block.querySelector('a[href$=".json"]');
   if (formLink) {
