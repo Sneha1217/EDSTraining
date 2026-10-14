@@ -7,4 +7,5 @@
 .teaser .teaser-image img {
   width: 100%;
   height: auto;
+  background-color: blueviolet;
 }
