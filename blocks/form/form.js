@@ -1,5 +1,5 @@
 /* eslint-disable linebreak-style */
-import { sampleRUM } from '../../scripts/lib-franklin.js';
+import { sampleRUM } from '../../scripts/aem.js';
 import decorateFieldset from './fieldset.js';
 
 function generateUnique() {
